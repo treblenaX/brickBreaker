@@ -29,6 +29,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private Paddle player;
     private Ball ball;
     
+    private int bricksCount = BRICK_ROW * BRICK_COLUMN;
+    
     //Constructor
     public GamePanel()
     {
@@ -57,7 +59,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         image = new BufferedImage(PANE_WIDTH, PANE_WIDTH, BufferedImage.TYPE_INT_RGB);
         g = (Graphics2D) image.getGraphics();
         
-        bricks = fillBricks(g);
+        bricks = fillBricks();
         player = new Paddle();
         ball = new Ball(player);
         
@@ -110,39 +112,59 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         {
             for (int column = 0; column < bricks[row].length; column++)
             {
-                if (bricks[row][column].hitBottom((int)ball.getX(), (int)ball.getY()))
+                if (bricks[row][column] != null)
                 {
-                    ball.horBounce();
-                    bricks[row][column].setDestroyed(true);
-                }
-                else if (bricks[row][column].hitTop((int)ball.getX(), (int)ball.getY()))
-                {
-                    ball.horBounce();
-                    bricks[row][column].setDestroyed(true);
-                }
-                else if (bricks[row][column].hitLeft((int)ball.getX(),(int)ball.getY()))
-                {
-                    ball.verBounce();
-                    bricks[row][column].setDestroyed(true);
-                }
-                else if (bricks[row][column].hitRight((int)ball.getX(), (int)ball.getY()))
-                {
-                    ball.verBounce();
-                    bricks[row][column].setDestroyed(true);
+                    if (bricks[row][column].hitBottom((int)ball.getX(), (int)ball.getY()))
+                    {
+                        ball.horBounce();
+                        bricks[row][column] = null; 
+                        bricksCount--;
+                        System.out.println("Bricks Count: " + bricksCount);
+                    }
+                    else if (bricks[row][column].hitTop((int)ball.getX(), (int)ball.getY()))
+                    {
+                        ball.horBounce();
+                        bricks[row][column] = null; 
+                        bricksCount--;
+                        System.out.println("Bricks Count: " + bricksCount);
+                    }
+                    else if (bricks[row][column].hitLeft((int)ball.getX(),(int)ball.getY()))
+                    {
+                        ball.verBounce();
+                        bricks[row][column] = null;
+                        bricksCount--;
+                        System.out.println("Bricks Count: " + bricksCount);
+                    }
+                    else if (bricks[row][column].hitRight((int)ball.getX(), (int)ball.getY()))
+                    {
+                        ball.verBounce();
+                        bricks[row][column] = null; 
+                        bricksCount--;
+                        System.out.println("Bricks Count: " + bricksCount);
+                    }
                 }
             }
         }
     }
     
+    public void pause()
+    {
+        thread.stop();
+    }
+    
     private void gameUpdate()
     {
+        if (bricksCount == 0)
+        {
+            pause();
+        }
+        
         //Collision
         checkBricks();
         //Updates the paddle's keys and movement
         player.update();
         //Updates the ball's movement
-        ball.update();
-        
+        ball.update();     
     }
     
     private void gameRender()
@@ -155,20 +177,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         g.fillRect(BORDER_LENGTH, BORDER_LENGTH, BOARD_WIDTH, BOARD_HEIGHT);
         //FPS counter
         g.setColor(Color.BLACK);
-        g.drawString("FPS: " + (int)averageFPS, 40, 40);
-        
-        bricks = fillBricks(g);
-        player.draw(g);
-        ball.draw(g);
-        
-        //Bricks draw
+        g.drawString("FPS: " + (int) averageFPS, 40, 40);
+
         for (int row = 0; row < bricks.length; row++)
         {
             for (int column = 0; column < bricks[row].length; column++)
             {
-                bricks[row][column].draw(g);
+                if (bricks[row][column] != null)
+                {
+                    bricks[row][column].draw(g);
+                }
             }
         }
+        
+        player.draw(g);
+        ball.draw(g);
     }
     
     private void gameDraw()
@@ -178,9 +201,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         g2.dispose(); 
     }
     
-    private Brick[][] fillBricks(Graphics2D g)
+    private Brick[][] fillBricks()
     {
-        Brick[][] bricks = new Brick[2][7];
+        Brick[][] bricks = new Brick[BRICK_ROW][BRICK_COLUMN];
         for (int row = 0; row < bricks.length; row++)
         {
             for (int column = 0; column < bricks[row].length; column++)

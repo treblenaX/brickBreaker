@@ -32,27 +32,9 @@ public class Brick extends Rectangle2D {
     
     //Functions   
     public void draw(Graphics2D g)
-    {
-        if (!destroyed)
-        {
-            g.setColor(Color.BLACK);
-            g.fillRect(x, y, w, h);
-        }
-    }
-    
-    public void update()
-    {
-        
-    }
-    
-    public void setDestroyed(boolean destroyed)
-    {
-        this.destroyed = destroyed;
-    }
-    
-    public boolean getDestroyed()
-    {
-        return this.destroyed;
+    {        
+        g.setColor(Color.BLACK);
+        g.fillRect(x, y, w, h);
     }
     
     public boolean hitBottom(int ballX, int ballY)

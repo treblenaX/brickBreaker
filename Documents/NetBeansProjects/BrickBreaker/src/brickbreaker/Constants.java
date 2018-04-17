@@ -15,6 +15,8 @@ public class Constants {
     //GamePanel Constants
     public static final int PANE_WIDTH = 1280;
     public static final int PANE_HEIGHT = 720;
+    public static final int BRICK_ROW = 2;
+    public static final int BRICK_COLUMN = 7;
     public static final double GAME_HERTZ = 60.0;
     
     //Board Constants
